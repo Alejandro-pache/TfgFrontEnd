@@ -7,10 +7,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.tfgfrontend.R
 
 class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
-
+// Prueba
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<View>(R.id.btnBack).setOnClickListener {
             findNavController().navigateUp()
         }
     }
 }
+//prueba
