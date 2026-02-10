@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tfgfrontend.databinding.FragmentStartBinding
 import com.example.tfgfrontend.R
-//Este es el fragment en le que comienza la aplicacion.
+//Este es el fragment en le que comienza la aplicacion
 class StartFragment : Fragment() {
     private var _binding: FragmentStartBinding? = null
     private val binding get() = _binding!!
