@@ -8,11 +8,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.tfgfrontend.R
 
 class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
-
+    // Crear Boton de login con funcion.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<Button>(R.id.btnLogin).setOnClickListener {
             findNavController().navigate(R.id.action_login_to_businessList)
         }
+        // Volver para atras
         view.findViewById<View>(R.id.btnBack).setOnClickListener {
             findNavController().navigateUp()
         }

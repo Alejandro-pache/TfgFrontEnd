@@ -14,4 +14,3 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         }
     }
 }
-//prueba
