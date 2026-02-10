@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/startFragment">
+
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.example.tfgfrontend.ui.start.StartFragment"
+        android:label="Start" />
+
+    <fragment
+        android:id="@+id/loginClientFragment"
+        android:name="com.example.tfgfrontend.ui.login.LoginClientFragment"
+        android:label="Login" >
+        <action
+            android:id="@+id/action_login_to_businessList"
+            app:destination="@id/businessListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerBusinessFragment"
+        android:name="com.example.tfgfrontend.ui.register.RegisterBusinessFragment"
+        android:label="Register" />
+
+    <fragment
+        android:id="@+id/businessListFragment"
+        android:name="com.example.tfgfrontend.ui.business.BusinessListFragment"
+        android:label="Business List" />
+</navigation>
