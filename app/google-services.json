@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671643046150",
+    "project_id": "fir-android-5fe32",
+    "storage_bucket": "fir-android-5fe32.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671643046150:android:5118e4794755c9cd9e8e87",
+        "android_client_info": {
+          "package_name": "com.example.TfgFrontEnd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCioyJp_aliV8gRjeobFlV1ixhTjqiG1tM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
