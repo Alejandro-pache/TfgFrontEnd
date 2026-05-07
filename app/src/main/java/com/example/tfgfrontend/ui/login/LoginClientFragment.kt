@@ -94,6 +94,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
             } catch (e: GetCredentialException) {
                 Log.e("GoogleSignIn", e.message ?: "Error")
+                Toast.makeText(requireContext(), "No se pudo iniciar con Google", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -108,6 +109,9 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
                 GoogleIdTokenCredential.createFrom(credential.data)
 
             firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
+        } else {
+            Log.e("GoogleSignIn", "Credencial de Google no válida")
+            Toast.makeText(requireContext(), "Error con la cuenta de Google", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -122,6 +126,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
                     findNavController().navigate(R.id.businessListFragment)
                 } else {
                     Log.e("GoogleSignIn", task.exception?.message ?: "Auth error")
+                    Toast.makeText(requireContext(), "Error al autenticar con Google", Toast.LENGTH_SHORT).show()
                 }
             }
     }
