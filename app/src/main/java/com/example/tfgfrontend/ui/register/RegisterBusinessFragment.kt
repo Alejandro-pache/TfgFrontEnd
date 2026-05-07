@@ -55,12 +55,14 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         val dni = view.findViewById<EditText>(R.id.etDni).text.toString().trim()
 
         if (email.isEmpty() || password.isEmpty() || ownerName.isEmpty() || businessName.isEmpty() || dni.isEmpty()) {
-            Toast.makeText(requireContext(), "Completá todos los campos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No se ha podido crear el negocio", Toast.LENGTH_SHORT).show()
             return
         }
 
         val auth = FirebaseAuth.getInstance()
         val firestore = FirebaseFirestore.getInstance()
+        val defaultLogoUri = "android.resource://${requireContext().packageName}/${R.drawable.listme}"
+        val logoUriToSave = selectedLogoUri?.toString() ?: defaultLogoUri
 
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
@@ -71,7 +73,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                     "ownerName" to ownerName,
                     "businessName" to businessName,
                     "dni" to dni,
-                    "logoUri" to (selectedLogoUri?.toString() ?: ""),
+                    "logoUri" to logoUriToSave,
                     "createdAt" to System.currentTimeMillis()
                 )
 
@@ -83,11 +85,9 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                         findNavController().navigate(R.id.businessListFragment)
                     }
                     .addOnFailureListener {
-                        Toast.makeText(requireContext(), "Se creó la cuenta, pero falló guardar el negocio", Toast.LENGTH_LONG).show()
                     }
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "No se pudo registrar el negocio", Toast.LENGTH_SHORT).show()
             }
     }
 }
