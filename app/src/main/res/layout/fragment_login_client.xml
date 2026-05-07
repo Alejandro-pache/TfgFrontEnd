@@ -48,6 +48,13 @@
                 android:gravity="center"
                 android:padding="24dp">
 
+                <ImageView
+                    android:layout_width="180dp"
+                    android:layout_height="90dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/listme"
+                    android:scaleType="fitCenter" />
+
                 <!-- Título -->
                 <TextView
                     android:layout_width="match_parent"

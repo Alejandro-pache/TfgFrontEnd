@@ -11,8 +11,6 @@ import com.example.tfgfrontend.R
 import com.example.tfgfrontend.databinding.FragmentLoginClientBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.auth.ktx.auth
 import kotlinx.coroutines.launch
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
@@ -36,7 +34,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
         _binding = FragmentLoginClientBinding.bind(view)
 
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
         credentialManager = CredentialManager.create(requireContext())
 
         binding.btnLogin.setOnClickListener {
