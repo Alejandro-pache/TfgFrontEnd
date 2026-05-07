@@ -65,7 +65,18 @@
                 android:textAllCaps="false"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
-                android:backgroundTint="#B89CFF"/>
+                android:backgroundTint="#B89CFF"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnContinuarSinCuenta"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Seguir sin cuenta"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:backgroundTint="@color/white_button_tint"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
