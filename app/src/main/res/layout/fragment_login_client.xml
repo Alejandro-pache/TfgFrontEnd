@@ -49,8 +49,8 @@
                 android:padding="24dp">
 
                 <ImageView
-                    android:layout_width="180dp"
-                    android:layout_height="90dp"
+                    android:layout_width="320dp"
+                    android:layout_height="160dp"
                     android:layout_marginBottom="12dp"
                     android:src="@drawable/listme"
                     android:scaleType="fitCenter" />
@@ -98,7 +98,7 @@
                     android:textAllCaps="false"
                     android:textSize="18sp"
                     android:textColor="#000000"
-                    android:backgroundTint="#FFFFFF"
+                    android:backgroundTint="@color/white_button_tint"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Botón login con Google -->

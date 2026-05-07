@@ -2,6 +2,7 @@ package com.example.tfgfrontend.ui.register
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -12,6 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tfgfrontend.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
@@ -85,9 +90,20 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                         findNavController().navigate(R.id.businessListFragment)
                     }
                     .addOnFailureListener {
+                        Log.e("RegisterBusiness", "Error guardando negocio en Firestore", it)
+                        Toast.makeText(requireContext(), "Revisa los datos e inténtalo de nuevo", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
+                Log.e("RegisterBusiness", "Error creando usuario de negocio", it)
+                val message = when (it) {
+                    is FirebaseNetworkException -> "Revisa la red, por favor"
+                    is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado corta"
+                    is FirebaseAuthInvalidCredentialsException -> "El correo no es válido"
+                    is FirebaseAuthUserCollisionException -> "Ese correo ya está registrado"
+                    else -> "Revisa los datos e inténtalo de nuevo"
+                }
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
     }
 }

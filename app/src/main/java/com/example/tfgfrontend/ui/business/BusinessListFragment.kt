@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfgfrontend.R
@@ -25,6 +26,10 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<View>(R.id.btnBack).setOnClickListener {
+            findNavController().navigate(R.id.startFragment)
+        }
 
         val recycler = view.findViewById<RecyclerView>(R.id.rvBusinesses)
         recycler.layoutManager = LinearLayoutManager(requireContext())
