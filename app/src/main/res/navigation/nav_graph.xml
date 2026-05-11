@@ -18,6 +18,11 @@
     </fragment>
 
     <fragment
+        android:id="@+id/registerUserFragment"
+        android:name="com.example.tfgfrontend.ui.register.RegisterUserFragment"
+        android:label="Register User" />
+
+    <fragment
         android:id="@+id/registerBusinessFragment"
         android:name="com.example.tfgfrontend.ui.register.RegisterBusinessFragment"
         android:label="Register" />

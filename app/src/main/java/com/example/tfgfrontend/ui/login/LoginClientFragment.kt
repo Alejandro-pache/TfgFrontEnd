@@ -45,6 +45,10 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
             signInWithGoogle()
         }
 
+        binding.btnGoToRegister.setOnClickListener {
+            findNavController().navigate(R.id.registerUserFragment)
+        }
+
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }

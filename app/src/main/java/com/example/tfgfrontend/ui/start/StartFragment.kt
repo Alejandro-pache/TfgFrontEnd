@@ -31,10 +31,6 @@ class StartFragment : Fragment() {
         binding.btnCrearEmpresa.setOnClickListener {
             findNavController().navigate(R.id.registerBusinessFragment)
         }
-
-        binding.btnContinuarSinCuenta.setOnClickListener {
-            findNavController().navigate(R.id.businessListFragment)
-        }
     }
 
     override fun onDestroyView() {
