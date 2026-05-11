@@ -39,6 +39,17 @@
                 android:textStyle="bold"
                 android:maxWidth="190dp"
                 android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tvBusinessItemTodayHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxWidth="190dp"
+                android:text="Hoy: --:-- - --:--"
+                android:textColor="#CFCFCF"
+                android:textSize="13sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

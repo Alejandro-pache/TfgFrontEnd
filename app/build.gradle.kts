@@ -60,8 +60,14 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.googleid)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.androidx.fragment.testing)
 
 
 }

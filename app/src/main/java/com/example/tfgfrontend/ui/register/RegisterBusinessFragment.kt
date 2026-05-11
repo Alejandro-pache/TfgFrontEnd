@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tfgfrontend.R
+import com.example.tfgfrontend.domain.ScheduleValidator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -59,9 +60,62 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         val businessName = view.findViewById<EditText>(R.id.etEmpresa).text.toString().trim()
         val dni = view.findViewById<EditText>(R.id.etDni).text.toString().trim()
 
-        if (email.isEmpty() || password.isEmpty() || ownerName.isEmpty() || businessName.isEmpty() || dni.isEmpty()) {
+        val mondayOpen = view.findViewById<EditText>(R.id.etMondayOpen).text.toString().trim()
+        val mondayClose = view.findViewById<EditText>(R.id.etMondayClose).text.toString().trim()
+        val tuesdayOpen = view.findViewById<EditText>(R.id.etTuesdayOpen).text.toString().trim()
+        val tuesdayClose = view.findViewById<EditText>(R.id.etTuesdayClose).text.toString().trim()
+        val wednesdayOpen = view.findViewById<EditText>(R.id.etWednesdayOpen).text.toString().trim()
+        val wednesdayClose = view.findViewById<EditText>(R.id.etWednesdayClose).text.toString().trim()
+        val thursdayOpen = view.findViewById<EditText>(R.id.etThursdayOpen).text.toString().trim()
+        val thursdayClose = view.findViewById<EditText>(R.id.etThursdayClose).text.toString().trim()
+        val fridayOpen = view.findViewById<EditText>(R.id.etFridayOpen).text.toString().trim()
+        val fridayClose = view.findViewById<EditText>(R.id.etFridayClose).text.toString().trim()
+        val saturdayOpen = view.findViewById<EditText>(R.id.etSaturdayOpen).text.toString().trim()
+        val saturdayClose = view.findViewById<EditText>(R.id.etSaturdayClose).text.toString().trim()
+        val sundayOpen = view.findViewById<EditText>(R.id.etSundayOpen).text.toString().trim()
+        val sundayClose = view.findViewById<EditText>(R.id.etSundayClose).text.toString().trim()
+
+        if (email.isEmpty() || password.isEmpty() || ownerName.isEmpty() || businessName.isEmpty() || dni.isEmpty() ||
+            mondayOpen.isEmpty() || mondayClose.isEmpty() ||
+            tuesdayOpen.isEmpty() || tuesdayClose.isEmpty() ||
+            wednesdayOpen.isEmpty() || wednesdayClose.isEmpty() ||
+            thursdayOpen.isEmpty() || thursdayClose.isEmpty() ||
+            fridayOpen.isEmpty() || fridayClose.isEmpty() ||
+            saturdayOpen.isEmpty() || saturdayClose.isEmpty() ||
+            sundayOpen.isEmpty() || sundayClose.isEmpty()
+        ) {
             Toast.makeText(requireContext(), "No se ha podido crear el negocio", Toast.LENGTH_SHORT).show()
             return
+        }
+
+        val weeklyRanges = listOf(
+            Triple("Lunes", mondayOpen, mondayClose),
+            Triple("Martes", tuesdayOpen, tuesdayClose),
+            Triple("Miércoles", wednesdayOpen, wednesdayClose),
+            Triple("Jueves", thursdayOpen, thursdayClose),
+            Triple("Viernes", fridayOpen, fridayClose),
+            Triple("Sábado", saturdayOpen, saturdayClose),
+            Triple("Domingo", sundayOpen, sundayClose)
+        )
+
+        for ((dayName, open, close) in weeklyRanges) {
+            if (!ScheduleValidator.isValidHour(open) || !ScheduleValidator.isValidHour(close)) {
+                Toast.makeText(
+                    requireContext(),
+                    "$dayName: usa formato HH:mm (ej: 09:00)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+
+            if (!ScheduleValidator.isOpenBeforeClose(open, close)) {
+                Toast.makeText(
+                    requireContext(),
+                    "$dayName: la apertura debe ser anterior al cierre",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
         }
 
         val auth = FirebaseAuth.getInstance()
@@ -72,6 +126,16 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid ?: return@addOnSuccessListener
+                val schedule = hashMapOf(
+                    "monday" to hashMapOf("open" to mondayOpen, "close" to mondayClose),
+                    "tuesday" to hashMapOf("open" to tuesdayOpen, "close" to tuesdayClose),
+                    "wednesday" to hashMapOf("open" to wednesdayOpen, "close" to wednesdayClose),
+                    "thursday" to hashMapOf("open" to thursdayOpen, "close" to thursdayClose),
+                    "friday" to hashMapOf("open" to fridayOpen, "close" to fridayClose),
+                    "saturday" to hashMapOf("open" to saturdayOpen, "close" to saturdayClose),
+                    "sunday" to hashMapOf("open" to sundayOpen, "close" to sundayClose)
+                )
+
                 val businessData = hashMapOf(
                     "uid" to uid,
                     "email" to email,
@@ -79,6 +143,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                     "businessName" to businessName,
                     "dni" to dni,
                     "logoUri" to logoUriToSave,
+                    "schedule" to schedule,
                     "createdAt" to System.currentTimeMillis()
                 )
 
@@ -106,4 +171,5 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
     }
+
 }

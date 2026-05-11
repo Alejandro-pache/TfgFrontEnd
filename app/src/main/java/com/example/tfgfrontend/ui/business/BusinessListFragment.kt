@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfgfrontend.R
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 data class BusinessItem(
     val businessName: String = "",
-    val logoUri: String = ""
+    val logoUri: String = "",
+    val todayOpen: String = "",
+    val todayClose: String = ""
 )
 
 class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
@@ -39,9 +42,15 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
             .get()
             .addOnSuccessListener { result ->
                 val businesses = result.documents.map { doc ->
+                    val schedule = doc.get("schedule") as? Map<*, *>
+                    val todayKey = getTodayKey()
+                    val todayHours = schedule?.get(todayKey) as? Map<*, *>
+
                     BusinessItem(
                         businessName = doc.getString("businessName").orEmpty(),
-                        logoUri = doc.getString("logoUri").orEmpty()
+                        logoUri = doc.getString("logoUri").orEmpty(),
+                        todayOpen = todayHours?.get("open")?.toString().orEmpty(),
+                        todayClose = todayHours?.get("close")?.toString().orEmpty()
                     )
                 }.filter { it.businessName.isNotBlank() }
 
@@ -50,6 +59,19 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "No se pudo cargar la lista de negocios", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun getTodayKey(): String {
+        return when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> "monday"
+            Calendar.TUESDAY -> "tuesday"
+            Calendar.WEDNESDAY -> "wednesday"
+            Calendar.THURSDAY -> "thursday"
+            Calendar.FRIDAY -> "friday"
+            Calendar.SATURDAY -> "saturday"
+            Calendar.SUNDAY -> "sunday"
+            else -> "monday"
+        }
     }
 
     private class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessViewHolder>() {
@@ -75,9 +97,15 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
         class BusinessViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val logo = itemView.findViewById<ImageView>(R.id.ivBusinessItemLogo)
             private val name = itemView.findViewById<TextView>(R.id.tvBusinessItemName)
+            private val todayHours = itemView.findViewById<TextView>(R.id.tvBusinessItemTodayHours)
 
             fun bind(item: BusinessItem) {
                 name.text = item.businessName
+                todayHours.text = if (item.todayOpen.isNotBlank() && item.todayClose.isNotBlank()) {
+                    "Hoy: ${item.todayOpen} - ${item.todayClose}"
+                } else {
+                    "Hoy: horario no disponible"
+                }
                 if (item.logoUri.isNotBlank()) {
                     try {
                         logo.setImageURI(Uri.parse(item.logoUri))
