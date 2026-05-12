@@ -6,11 +6,14 @@
     android:layout_marginBottom="14dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardBusinessItem"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:focusable="true"
         app:cardCornerRadius="18dp"
-        app:cardBackgroundColor="#2A2A2A"
+        app:cardBackgroundColor="@color/card_dark"
         app:cardElevation="4dp">
 
         <LinearLayout
@@ -35,7 +38,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Nombre del negocio"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_on_dark"
                 android:textStyle="bold"
                 android:maxWidth="190dp"
                 android:textSize="18sp"/>
@@ -48,7 +51,7 @@
                 android:gravity="center"
                 android:maxWidth="190dp"
                 android:text="Hoy: --:-- - --:--"
-                android:textColor="#CFCFCF"
+                android:textColor="@color/text_muted_alt"
                 android:textSize="13sp" />
         </LinearLayout>
 

@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
     private var selectedLogoUri: Uri? = null
+    private var isRegisteringBusiness = false
 
     private val logoPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -54,6 +55,8 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
     }
 
     private fun registerBusiness(view: View) {
+        if (isRegisteringBusiness) return
+
         val email = view.findViewById<EditText>(R.id.etEmail).text.toString().trim()
         val password = view.findViewById<EditText>(R.id.etPassword).text.toString().trim()
         val ownerName = view.findViewById<EditText>(R.id.etNombreApellidos).text.toString().trim()
@@ -123,6 +126,8 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         val defaultLogoUri = "android.resource://${requireContext().packageName}/${R.drawable.listme}"
         val logoUriToSave = selectedLogoUri?.toString() ?: defaultLogoUri
 
+        setRegisterBusinessLoading(view, true)
+
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid ?: return@addOnSuccessListener
@@ -151,15 +156,18 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                     .document(uid)
                     .set(businessData)
                     .addOnSuccessListener {
+                        setRegisterBusinessLoading(view, false)
                         Toast.makeText(requireContext(), "Negocio registrado", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.businessListFragment)
                     }
                     .addOnFailureListener {
+                        setRegisterBusinessLoading(view, false)
                         Log.e("RegisterBusiness", "Error guardando negocio en Firestore", it)
                         Toast.makeText(requireContext(), "Revisa los datos e inténtalo de nuevo", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
+                setRegisterBusinessLoading(view, false)
                 Log.e("RegisterBusiness", "Error creando usuario de negocio", it)
                 val message = when (it) {
                     is FirebaseNetworkException -> "Revisa la red, por favor"
@@ -170,6 +178,20 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                 }
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun setRegisterBusinessLoading(view: View, loading: Boolean) {
+        isRegisteringBusiness = loading
+        val btnRegister = view.findViewById<Button>(R.id.btnRegister)
+        val btnPickLogo = view.findViewById<Button>(R.id.btnPickLogo)
+        val btnBack = view.findViewById<View>(R.id.btnBack)
+
+        btnRegister.isEnabled = !loading
+        btnPickLogo.isEnabled = !loading
+        btnBack.isEnabled = !loading
+
+        btnRegister.text = if (loading) "Registrando negocio..." else "Registrar negocio"
+        btnRegister.alpha = if (loading) 0.7f else 1f
     }
 
 }

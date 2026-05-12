@@ -31,4 +31,14 @@
         android:id="@+id/businessListFragment"
         android:name="com.example.tfgfrontend.ui.business.BusinessListFragment"
         android:label="Business List" />
+
+    <fragment
+        android:id="@+id/businessCalendarFragment"
+        android:name="com.example.tfgfrontend.ui.business.BusinessCalendarFragment"
+        android:label="Business Calendar" />
+
+    <fragment
+        android:id="@+id/myReservationsFragment"
+        android:name="com.example.tfgfrontend.ui.business.MyReservationsFragment"
+        android:label="My Reservations" />
 </navigation>

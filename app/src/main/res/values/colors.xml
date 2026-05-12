@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="surface_black">#000000</color>
+    <color name="text_on_dark">#FFFFFF</color>
+    <color name="text_on_light">#000000</color>
+    <color name="text_muted">#D0D0D0</color>
+    <color name="text_muted_alt">#CFCFCF</color>
+    <color name="hint_on_dark">#80FFFFFF</color>
+    <color name="input_hint">#BBBBBB</color>
+    <color name="accent_primary">#B89CFF</color>
+    <color name="card_dark">#2A2A2A</color>
+    <color name="button_dark">#2D2D2D</color>
+    <color name="pressed_light">#E0E0E0</color>
 </resources>

@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
 data class BusinessItem(
+    val id: String = "",
     val businessName: String = "",
     val logoUri: String = "",
     val todayOpen: String = "",
@@ -25,7 +26,15 @@ data class BusinessItem(
 
 class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
 
-    private val businessAdapter = BusinessAdapter()
+    private val businessAdapter = BusinessAdapter { business ->
+        findNavController().navigate(
+            R.id.businessCalendarFragment,
+            Bundle().apply {
+                putString("businessId", business.id)
+                putString("businessName", business.businessName)
+            }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +44,7 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
         }
 
         val recycler = view.findViewById<RecyclerView>(R.id.rvBusinesses)
+        val loadingText = view.findViewById<TextView>(R.id.tvLoadingBusinesses)
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = businessAdapter
 
@@ -47,6 +57,7 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
                     val todayHours = schedule?.get(todayKey) as? Map<*, *>
 
                     BusinessItem(
+                        id = doc.id,
                         businessName = doc.getString("businessName").orEmpty(),
                         logoUri = doc.getString("logoUri").orEmpty(),
                         todayOpen = todayHours?.get("open")?.toString().orEmpty(),
@@ -55,8 +66,10 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
                 }.filter { it.businessName.isNotBlank() }
 
                 businessAdapter.submitList(businesses)
+                loadingText.visibility = View.GONE
             }
             .addOnFailureListener {
+                loadingText.visibility = View.GONE
                 Toast.makeText(requireContext(), "No se pudo cargar la lista de negocios", Toast.LENGTH_SHORT).show()
             }
     }
@@ -74,7 +87,9 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
         }
     }
 
-    private class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessViewHolder>() {
+    private class BusinessAdapter(
+        private val onBusinessClick: (BusinessItem) -> Unit
+    ) : RecyclerView.Adapter<BusinessAdapter.BusinessViewHolder>() {
         private val items = mutableListOf<BusinessItem>()
 
         fun submitList(newItems: List<BusinessItem>) {
@@ -89,7 +104,7 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
         }
 
         override fun onBindViewHolder(holder: BusinessViewHolder, position: Int) {
-            holder.bind(items[position])
+            holder.bind(items[position], onBusinessClick)
         }
 
         override fun getItemCount(): Int = items.size
@@ -98,14 +113,20 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
             private val logo = itemView.findViewById<ImageView>(R.id.ivBusinessItemLogo)
             private val name = itemView.findViewById<TextView>(R.id.tvBusinessItemName)
             private val todayHours = itemView.findViewById<TextView>(R.id.tvBusinessItemTodayHours)
+            private val card = itemView.findViewById<View>(R.id.cardBusinessItem)
 
-            fun bind(item: BusinessItem) {
+            fun bind(item: BusinessItem, onBusinessClick: (BusinessItem) -> Unit) {
                 name.text = item.businessName
                 todayHours.text = if (item.todayOpen.isNotBlank() && item.todayClose.isNotBlank()) {
                     "Hoy: ${item.todayOpen} - ${item.todayClose}"
                 } else {
                     "Hoy: horario no disponible"
                 }
+
+                card.setOnClickListener {
+                    onBusinessClick(item)
+                }
+
                 if (item.logoUri.isNotBlank()) {
                     try {
                         logo.setImageURI(Uri.parse(item.logoUri))

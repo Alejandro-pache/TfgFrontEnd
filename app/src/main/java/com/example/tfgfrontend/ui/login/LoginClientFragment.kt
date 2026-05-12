@@ -3,6 +3,7 @@ package com.example.tfgfrontend.ui.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +29,12 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var credentialManager: CredentialManager
+    private var activeAuthAction: AuthAction? = null
+
+    private enum class AuthAction {
+        EMAIL,
+        GOOGLE
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,10 +45,12 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
         credentialManager = CredentialManager.create(requireContext())
 
         binding.btnLogin.setOnClickListener {
+            if (activeAuthAction != null) return@setOnClickListener
             loginWithEmail()
         }
 
         binding.btnGoogle.setOnClickListener {
+            if (activeAuthAction != null) return@setOnClickListener
             signInWithGoogle()
         }
 
@@ -64,8 +73,11 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
             return
         }
 
+        setAuthLoading(AuthAction.EMAIL, true)
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
+                setAuthLoading(AuthAction.EMAIL, false)
                 if (task.isSuccessful) {
                     findNavController().navigate(R.id.businessListFragment)
                 } else {
@@ -75,6 +87,8 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
     }
 
     private fun signInWithGoogle() {
+
+        setAuthLoading(AuthAction.GOOGLE, true)
 
         val googleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(getString(R.string.default_web_client_id))
@@ -95,6 +109,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
                 handleSignIn(result.credential)
 
             } catch (e: GetCredentialException) {
+                setAuthLoading(AuthAction.GOOGLE, false)
                 Log.e("GoogleSignIn", e.message ?: "Error")
                 Toast.makeText(requireContext(), "No se pudo iniciar con Google", Toast.LENGTH_SHORT).show()
             }
@@ -112,6 +127,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
             firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
         } else {
+            setAuthLoading(AuthAction.GOOGLE, false)
             Log.e("GoogleSignIn", "Credencial de Google no válida")
             Toast.makeText(requireContext(), "Error con la cuenta de Google", Toast.LENGTH_SHORT).show()
         }
@@ -124,6 +140,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
         auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener { task ->
+                setAuthLoading(AuthAction.GOOGLE, false)
                 if (task.isSuccessful) {
                     findNavController().navigate(R.id.businessListFragment)
                 } else {
@@ -131,6 +148,28 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
                     Toast.makeText(requireContext(), "Error al autenticar con Google", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun setAuthLoading(action: AuthAction, isLoading: Boolean) {
+        if (isLoading) {
+            activeAuthAction = action
+        } else if (activeAuthAction == action) {
+            activeAuthAction = null
+        }
+
+        val loading = activeAuthAction != null
+        binding.btnLogin.isEnabled = !loading
+        binding.btnGoogle.isEnabled = !loading
+        binding.btnBack.isEnabled = !loading
+        binding.btnGoToRegister.isEnabled = !loading
+
+        setButtonStateText(binding.btnLogin, if (activeAuthAction == AuthAction.EMAIL) "Iniciando sesión..." else "Iniciar Sesión")
+        setButtonStateText(binding.btnGoogle, if (activeAuthAction == AuthAction.GOOGLE) "Conectando..." else "Continuar con Google")
+    }
+
+    private fun setButtonStateText(button: Button, text: String) {
+        button.text = text
+        button.alpha = if (button.isEnabled) 1f else 0.7f
     }
 
     override fun onDestroyView() {
