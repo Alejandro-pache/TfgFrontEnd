@@ -89,6 +89,15 @@
                     android:backgroundTint="@color/white"
                     android:layout_marginBottom="24dp" />
 
+                <CheckBox
+                    android:id="@+id/cbRememberDevice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:buttonTint="@color/text_on_dark"
+                    android:text="Recordar este equipo"
+                    android:textColor="@color/text_on_dark" />
+
                 <!-- Botón login normal -->
                 <Button
                     android:id="@+id/btnLogin"

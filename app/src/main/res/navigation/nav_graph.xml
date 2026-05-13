@@ -28,6 +28,11 @@
         android:label="Register" />
 
     <fragment
+        android:id="@+id/loginBusinessFragment"
+        android:name="com.example.tfgfrontend.ui.login.LoginBusinessFragment"
+        android:label="Login Business" />
+
+    <fragment
         android:id="@+id/businessListFragment"
         android:name="com.example.tfgfrontend.ui.business.BusinessListFragment"
         android:label="Business List" />
@@ -36,6 +41,11 @@
         android:id="@+id/businessCalendarFragment"
         android:name="com.example.tfgfrontend.ui.business.BusinessCalendarFragment"
         android:label="Business Calendar" />
+
+    <fragment
+        android:id="@+id/businessSetupFragment"
+        android:name="com.example.tfgfrontend.ui.business.BusinessSetupFragment"
+        android:label="Business Setup" />
 
     <fragment
         android:id="@+id/myReservationsFragment"

@@ -1,6 +1,8 @@
 package com.example.tfgfrontend.ui.login
 
 import android.os.Bundle
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -21,6 +23,7 @@ import androidx.credentials.Credential
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+import com.example.tfgfrontend.data.SessionPrefs
 
 class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
@@ -43,6 +46,12 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
         auth = FirebaseAuth.getInstance()
         credentialManager = CredentialManager.create(requireContext())
+
+        if (SessionPrefs.shouldRememberUser(requireContext())) {
+            binding.cbRememberDevice.isChecked = true
+            binding.etEmail.setText(SessionPrefs.getUserEmail(requireContext()))
+            binding.etPassword.setText(SessionPrefs.getUserPassword(requireContext()))
+        }
 
         binding.btnLogin.setOnClickListener {
             if (activeAuthAction != null) return@setOnClickListener
@@ -73,12 +82,27 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
             return
         }
 
+        if (!isNetworkAvailable() && SessionPrefs.shouldRememberUser(requireContext())) {
+            val savedEmail = SessionPrefs.getUserEmail(requireContext())
+            val savedPassword = SessionPrefs.getUserPassword(requireContext())
+            if (email == savedEmail && password == savedPassword) {
+                Toast.makeText(requireContext(), "Acceso sin conexión", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.myReservationsFragment)
+                return
+            }
+        }
+
         setAuthLoading(AuthAction.EMAIL, true)
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 setAuthLoading(AuthAction.EMAIL, false)
                 if (task.isSuccessful) {
+                    if (binding.cbRememberDevice.isChecked) {
+                        SessionPrefs.saveUserCredentials(requireContext(), email, password)
+                    } else {
+                        SessionPrefs.clearUserCredentials(requireContext())
+                    }
                     findNavController().navigate(R.id.businessListFragment)
                 } else {
                     Toast.makeText(requireContext(), "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
@@ -142,6 +166,12 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
             .addOnCompleteListener { task ->
                 setAuthLoading(AuthAction.GOOGLE, false)
                 if (task.isSuccessful) {
+                    if (binding.cbRememberDevice.isChecked) {
+                        val email = auth.currentUser?.email.orEmpty()
+                        SessionPrefs.saveUserCredentials(requireContext(), email, "")
+                    } else {
+                        SessionPrefs.clearUserCredentials(requireContext())
+                    }
                     findNavController().navigate(R.id.businessListFragment)
                 } else {
                     Log.e("GoogleSignIn", task.exception?.message ?: "Auth error")
@@ -170,6 +200,13 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
     private fun setButtonStateText(button: Button, text: String) {
         button.text = text
         button.alpha = if (button.isEnabled) 1f else 0.7f
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(ConnectivityManager::class.java)
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     override fun onDestroyView() {

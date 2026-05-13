@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -51,6 +52,10 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
 
         view.findViewById<Button>(R.id.btnRegister).setOnClickListener {
             registerBusiness(view)
+        }
+
+        view.findViewById<TextView>(R.id.btnGoToBusinessLogin).setOnClickListener {
+            findNavController().navigate(R.id.loginBusinessFragment)
         }
     }
 
@@ -131,62 +136,158 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid ?: return@addOnSuccessListener
-                val schedule = hashMapOf(
-                    "monday" to hashMapOf("open" to mondayOpen, "close" to mondayClose),
-                    "tuesday" to hashMapOf("open" to tuesdayOpen, "close" to tuesdayClose),
-                    "wednesday" to hashMapOf("open" to wednesdayOpen, "close" to wednesdayClose),
-                    "thursday" to hashMapOf("open" to thursdayOpen, "close" to thursdayClose),
-                    "friday" to hashMapOf("open" to fridayOpen, "close" to fridayClose),
-                    "saturday" to hashMapOf("open" to saturdayOpen, "close" to saturdayClose),
-                    "sunday" to hashMapOf("open" to sundayOpen, "close" to sundayClose)
+                saveBusinessData(
+                    uid = uid,
+                    email = email,
+                    ownerName = ownerName,
+                    businessName = businessName,
+                    dni = dni,
+                    logoUriToSave = logoUriToSave,
+                    mondayOpen = mondayOpen,
+                    mondayClose = mondayClose,
+                    tuesdayOpen = tuesdayOpen,
+                    tuesdayClose = tuesdayClose,
+                    wednesdayOpen = wednesdayOpen,
+                    wednesdayClose = wednesdayClose,
+                    thursdayOpen = thursdayOpen,
+                    thursdayClose = thursdayClose,
+                    fridayOpen = fridayOpen,
+                    fridayClose = fridayClose,
+                    saturdayOpen = saturdayOpen,
+                    saturdayClose = saturdayClose,
+                    sundayOpen = sundayOpen,
+                    sundayClose = sundayClose,
+                    view = view,
+                    firestore = firestore
                 )
+            }
+            .addOnFailureListener {
+                if (it is FirebaseAuthUserCollisionException) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener { result ->
+                            val uid = result.user?.uid
+                            if (uid.isNullOrBlank()) {
+                                setRegisterBusinessLoading(view, false)
+                                Toast.makeText(requireContext(), "No se pudo vincular la cuenta", Toast.LENGTH_SHORT).show()
+                                return@addOnSuccessListener
+                            }
 
-                val businessData = hashMapOf(
-                    "uid" to uid,
-                    "email" to email,
-                    "ownerName" to ownerName,
-                    "businessName" to businessName,
-                    "dni" to dni,
-                    "logoUri" to logoUriToSave,
-                    "schedule" to schedule,
-                    "createdAt" to System.currentTimeMillis()
-                )
+                            saveBusinessData(
+                                uid = uid,
+                                email = email,
+                                ownerName = ownerName,
+                                businessName = businessName,
+                                dni = dni,
+                                logoUriToSave = logoUriToSave,
+                                mondayOpen = mondayOpen,
+                                mondayClose = mondayClose,
+                                tuesdayOpen = tuesdayOpen,
+                                tuesdayClose = tuesdayClose,
+                                wednesdayOpen = wednesdayOpen,
+                                wednesdayClose = wednesdayClose,
+                                thursdayOpen = thursdayOpen,
+                                thursdayClose = thursdayClose,
+                                fridayOpen = fridayOpen,
+                                fridayClose = fridayClose,
+                                saturdayOpen = saturdayOpen,
+                                saturdayClose = saturdayClose,
+                                sundayOpen = sundayOpen,
+                                sundayClose = sundayClose,
+                                view = view,
+                                firestore = firestore
+                            )
+                        }
+                        .addOnFailureListener {
+                            setRegisterBusinessLoading(view, false)
+                            Toast.makeText(
+                                requireContext(),
+                                "Ese correo ya existe. Si quieres usarlo como negocio, introduce la misma contraseña de esa cuenta",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                } else {
+                    setRegisterBusinessLoading(view, false)
+                    Log.e("RegisterBusiness", "Error creando usuario de negocio", it)
+                    val message = when (it) {
+                        is FirebaseNetworkException -> "Revisa la red, por favor"
+                        is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado corta"
+                        is FirebaseAuthInvalidCredentialsException -> "El correo no es válido"
+                        else -> "Revisa los datos e inténtalo de nuevo"
+                    }
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
 
-                firestore.collection("businesses")
-                    .document(uid)
-                    .set(businessData)
-                    .addOnSuccessListener {
-                        setRegisterBusinessLoading(view, false)
-                        Toast.makeText(requireContext(), "Negocio registrado", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.businessListFragment)
-                    }
-                    .addOnFailureListener {
-                        setRegisterBusinessLoading(view, false)
-                        Log.e("RegisterBusiness", "Error guardando negocio en Firestore", it)
-                        Toast.makeText(requireContext(), "Revisa los datos e inténtalo de nuevo", Toast.LENGTH_SHORT).show()
-                    }
+    private fun saveBusinessData(
+        uid: String,
+        email: String,
+        ownerName: String,
+        businessName: String,
+        dni: String,
+        logoUriToSave: String,
+        mondayOpen: String,
+        mondayClose: String,
+        tuesdayOpen: String,
+        tuesdayClose: String,
+        wednesdayOpen: String,
+        wednesdayClose: String,
+        thursdayOpen: String,
+        thursdayClose: String,
+        fridayOpen: String,
+        fridayClose: String,
+        saturdayOpen: String,
+        saturdayClose: String,
+        sundayOpen: String,
+        sundayClose: String,
+        view: View,
+        firestore: FirebaseFirestore
+    ) {
+        val schedule = hashMapOf(
+            "monday" to hashMapOf("open" to mondayOpen, "close" to mondayClose),
+            "tuesday" to hashMapOf("open" to tuesdayOpen, "close" to tuesdayClose),
+            "wednesday" to hashMapOf("open" to wednesdayOpen, "close" to wednesdayClose),
+            "thursday" to hashMapOf("open" to thursdayOpen, "close" to thursdayClose),
+            "friday" to hashMapOf("open" to fridayOpen, "close" to fridayClose),
+            "saturday" to hashMapOf("open" to saturdayOpen, "close" to saturdayClose),
+            "sunday" to hashMapOf("open" to sundayOpen, "close" to sundayClose)
+        )
+
+        val businessData = hashMapOf(
+            "uid" to uid,
+            "email" to email,
+            "ownerName" to ownerName,
+            "businessName" to businessName,
+            "dni" to dni,
+            "logoUri" to logoUriToSave,
+            "schedule" to schedule,
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        firestore.collection("businesses")
+            .document(uid)
+            .set(businessData)
+            .addOnSuccessListener {
+                setRegisterBusinessLoading(view, false)
+                Toast.makeText(requireContext(), "Negocio registrado", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.businessListFragment)
             }
             .addOnFailureListener {
                 setRegisterBusinessLoading(view, false)
-                Log.e("RegisterBusiness", "Error creando usuario de negocio", it)
-                val message = when (it) {
-                    is FirebaseNetworkException -> "Revisa la red, por favor"
-                    is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado corta"
-                    is FirebaseAuthInvalidCredentialsException -> "El correo no es válido"
-                    is FirebaseAuthUserCollisionException -> "Ese correo ya está registrado"
-                    else -> "Revisa los datos e inténtalo de nuevo"
-                }
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                Log.e("RegisterBusiness", "Error guardando negocio en Firestore", it)
+                Toast.makeText(requireContext(), "Revisa los datos e inténtalo de nuevo", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun setRegisterBusinessLoading(view: View, loading: Boolean) {
         isRegisteringBusiness = loading
         val btnRegister = view.findViewById<Button>(R.id.btnRegister)
+        val btnGoToBusinessLogin = view.findViewById<TextView>(R.id.btnGoToBusinessLogin)
         val btnPickLogo = view.findViewById<Button>(R.id.btnPickLogo)
         val btnBack = view.findViewById<View>(R.id.btnBack)
 
         btnRegister.isEnabled = !loading
+        btnGoToBusinessLogin.isEnabled = !loading
         btnPickLogo.isEnabled = !loading
         btnBack.isEnabled = !loading
 
