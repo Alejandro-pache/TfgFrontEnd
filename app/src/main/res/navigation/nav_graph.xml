@@ -51,4 +51,9 @@
         android:id="@+id/myReservationsFragment"
         android:name="com.example.tfgfrontend.ui.business.MyReservationsFragment"
         android:label="My Reservations" />
+
+    <fragment
+        android:id="@+id/businessReservationsFragment"
+        android:name="com.example.tfgfrontend.ui.business.BusinessReservationsFragment"
+        android:label="Business Reservations" />
 </navigation>

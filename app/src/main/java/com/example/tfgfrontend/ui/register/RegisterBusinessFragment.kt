@@ -270,7 +270,13 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
             .addOnSuccessListener {
                 setRegisterBusinessLoading(view, false)
                 Toast.makeText(requireContext(), "Negocio registrado", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.businessListFragment)
+                findNavController().navigate(
+                    R.id.businessSetupFragment,
+                    Bundle().apply {
+                        putString("businessId", uid)
+                        putString("businessName", businessName)
+                    }
+                )
             }
             .addOnFailureListener {
                 setRegisterBusinessLoading(view, false)

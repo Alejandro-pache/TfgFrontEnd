@@ -87,7 +87,7 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
             val savedPassword = SessionPrefs.getUserPassword(requireContext())
             if (email == savedEmail && password == savedPassword) {
                 Toast.makeText(requireContext(), "Acceso sin conexión", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.myReservationsFragment)
+                findNavController().navigate(R.id.businessListFragment)
                 return
             }
         }
