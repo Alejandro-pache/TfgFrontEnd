@@ -1,6 +1,6 @@
 # ListMe — TFG Frontend (Android)
 
-Aplicación Android (Kotlin + XML, sin Compose) para la gestión de reservas entre clientes y negocios.
+Aplicación Android (Kotlin + XML, sin Compose) para gestionar reservas entre clientes y negocios.
 
 Este repositorio contiene el **frontend** del proyecto TFG **ListMe**.
 
@@ -8,7 +8,7 @@ Este repositorio contiene el **frontend** del proyecto TFG **ListMe**.
 
 ## Descripción
 
-ListMe digitaliza el flujo de reservas para reducir errores habituales de gestión manual (teléfono/mensajería), ofreciendo:
+ListMe pasa el proceso de reserva a una app para evitar errores habituales de la gestión manual (teléfono/mensajería):
 
 - acceso para **cliente** y **negocio**,
 - consulta de negocios disponibles,
@@ -122,12 +122,12 @@ app/src/main/java/com/example/tfgfrontend/
 
 ## Estado del proyecto
 
-Proyecto funcional para alcance de TFG, con mejoras recientes en:
+Proyecto funcional para el alcance del TFG. Últimas mejoras aplicadas:
 
 - validación de hora de reserva,
 - visualización de la hora en módulos de reservas,
 - robustez del fallback de logo por defecto,
-- ajustes de calidad y warnings clave de lint.
+- ajustes de calidad y corrección de warnings clave de lint.
 
 ---
 
