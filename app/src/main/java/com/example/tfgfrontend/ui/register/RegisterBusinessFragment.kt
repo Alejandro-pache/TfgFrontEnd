@@ -130,6 +130,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         val firestore = FirebaseFirestore.getInstance()
         val defaultLogoUri = "android.resource://${requireContext().packageName}/${R.drawable.listme}"
         val logoUriToSave = selectedLogoUri?.toString() ?: defaultLogoUri
+        val logoManuallySelected = selectedLogoUri != null
 
         setRegisterBusinessLoading(view, true)
 
@@ -143,6 +144,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                     businessName = businessName,
                     dni = dni,
                     logoUriToSave = logoUriToSave,
+                    logoManuallySelected = logoManuallySelected,
                     mondayOpen = mondayOpen,
                     mondayClose = mondayClose,
                     tuesdayOpen = tuesdayOpen,
@@ -179,6 +181,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
                                 businessName = businessName,
                                 dni = dni,
                                 logoUriToSave = logoUriToSave,
+                                logoManuallySelected = logoManuallySelected,
                                 mondayOpen = mondayOpen,
                                 mondayClose = mondayClose,
                                 tuesdayOpen = tuesdayOpen,
@@ -226,6 +229,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
         businessName: String,
         dni: String,
         logoUriToSave: String,
+        logoManuallySelected: Boolean,
         mondayOpen: String,
         mondayClose: String,
         tuesdayOpen: String,
@@ -260,6 +264,7 @@ class RegisterBusinessFragment : Fragment(R.layout.fragment_register_business) {
             "businessName" to businessName,
             "dni" to dni,
             "logoUri" to logoUriToSave,
+            "logoManuallySelected" to logoManuallySelected,
             "schedule" to schedule,
             "createdAt" to System.currentTimeMillis()
         )

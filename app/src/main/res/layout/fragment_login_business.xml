@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/text_on_dark" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/loginBusinessCardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="36dp"
+        app:cardBackgroundColor="@color/surface_black"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.76"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <ImageView
+                    android:layout_width="260dp"
+                    android:layout_height="130dp"
+                    android:layout_marginBottom="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/listme" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Accede a tu negocio"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_on_dark"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etDni"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="DNI"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:padding="12dp"
+                    android:textColor="@color/text_on_dark"
+                    android:textColorHint="@color/hint_on_dark" />
+
+                <EditText
+                    android:id="@+id/etEmpresa"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="Nombre de la empresa"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:padding="12dp"
+                    android:textColor="@color/text_on_dark"
+                    android:textColorHint="@color/hint_on_dark" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="Correo electrónico"
+                    android:importantForAutofill="no"
+                    android:inputType="textEmailAddress"
+                    android:padding="12dp"
+                    android:textColor="@color/text_on_dark"
+                    android:textColorHint="@color/hint_on_dark" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="20dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="Contraseña"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:padding="12dp"
+                    android:textColor="@color/text_on_dark"
+                    android:textColorHint="@color/hint_on_dark" />
+
+                <CheckBox
+                    android:id="@+id/cbRememberDevice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:buttonTint="@color/text_on_dark"
+                    android:text="Recordar este equipo"
+                    android:textColor="@color/text_on_dark" />
+
+                <Button
+                    android:id="@+id/btnLoginBusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:backgroundTint="@color/white_button_tint"
+                    android:text="Acceder a negocio"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_on_light"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

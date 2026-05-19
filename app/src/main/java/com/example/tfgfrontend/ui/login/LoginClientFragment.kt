@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.CustomCredential
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.Credential
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -132,6 +133,10 @@ class LoginClientFragment : Fragment(R.layout.fragment_login_client) {
 
                 handleSignIn(result.credential)
 
+            } catch (e: NoCredentialException) {
+                setAuthLoading(AuthAction.GOOGLE, false)
+                Log.w("GoogleSignIn", "No hay credenciales disponibles")
+                Toast.makeText(requireContext(), "No se encontró una cuenta de Google disponible", Toast.LENGTH_SHORT).show()
             } catch (e: GetCredentialException) {
                 setAuthLoading(AuthAction.GOOGLE, false)
                 Log.e("GoogleSignIn", e.message ?: "Error")

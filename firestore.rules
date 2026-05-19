@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBusinessOwner(businessId) {
+      return isSignedIn() && request.auth.uid == businessId;
+    }
+
+    function isReservationOwner() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function isReservationBusiness() {
+      return isSignedIn() && resource.data.businessId == request.auth.uid;
+    }
+
+    function hasRequiredReservationKeys(data) {
+      return data.keys().hasAll([
+        'businessId',
+        'businessName',
+        'userId',
+        'userEmail',
+        'userDisplayName',
+        'userPhotoUrl',
+        'date',
+        'dayName',
+        'createdAt'
+      ]);
+    }
+
+    function isValidReservationPayload(data) {
+      return hasRequiredReservationKeys(data)
+        && data.businessId is string && data.businessId.size() > 0
+        && data.businessName is string && data.businessName.size() > 0
+        && data.userId is string && data.userId.size() > 0
+        && data.userEmail is string && data.userEmail.size() > 0
+        && data.userDisplayName is string
+        && data.userPhotoUrl is string
+        && data.dayName is string && data.dayName.size() > 0
+        && data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && data.createdAt is int;
+    }
+
+    match /businesses/{businessId} {
+      allow read: if true;
+
+      allow create: if isBusinessOwner(businessId)
+                    && request.resource.data.uid == request.auth.uid;
+
+      allow update: if isBusinessOwner(businessId)
+                    && resource.data.uid == request.auth.uid
+                    && request.resource.data.uid == resource.data.uid;
+
+      allow delete: if isBusinessOwner(businessId);
+    }
+
+    match /reservations/{reservationId} {
+      allow read: if isReservationOwner() || isReservationBusiness();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == request.auth.uid
+                    && isValidReservationPayload(request.resource.data)
+                    && exists(/databases/$(database)/documents/businesses/$(request.resource.data.businessId));
+
+      allow update: if isReservationOwner()
+                    && isValidReservationPayload(request.resource.data)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.businessId == resource.data.businessId
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isReservationOwner() || isReservationBusiness();
+    }
+  }
+}

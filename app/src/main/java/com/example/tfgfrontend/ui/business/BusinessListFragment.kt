@@ -1,6 +1,5 @@
 package com.example.tfgfrontend.ui.business
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -28,6 +27,7 @@ data class BusinessItem(
     val id: String = "",
     val businessName: String = "",
     val logoUri: String = "",
+    val logoManuallySelected: Boolean = false,
     val todayOpen: String = "",
     val todayClose: String = ""
 )
@@ -69,8 +69,9 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
         }
 
         profileMenu.setOnClickListener { anchor ->
+            val popupParent = anchor.rootView as? ViewGroup
             val popupView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.view_profile_menu, null, false)
+                .inflate(R.layout.view_profile_menu, popupParent, false)
 
             val popupWindow = PopupWindow(
                 popupView,
@@ -121,6 +122,7 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
                         id = doc.id,
                         businessName = doc.getString("businessName").orEmpty(),
                         logoUri = doc.getString("logoUri").orEmpty(),
+                        logoManuallySelected = doc.getBoolean("logoManuallySelected") ?: false,
                         todayOpen = todayHours?.get("open")?.toString().orEmpty(),
                         todayClose = todayHours?.get("close")?.toString().orEmpty()
                     )
@@ -188,14 +190,14 @@ class BusinessListFragment : Fragment(R.layout.fragment_business_list) {
                     onBusinessClick(item)
                 }
 
-                if (item.logoUri.isNotBlank()) {
-                    try {
-                        logo.setImageURI(Uri.parse(item.logoUri))
-                    } catch (_: Exception) {
-                        logo.setImageResource(R.drawable.listme)
-                    }
-                } else {
+                if (!item.logoManuallySelected) {
                     logo.setImageResource(R.drawable.listme)
+                } else {
+                    logo.load(item.logoUri.ifBlank { null }) {
+                        placeholder(R.drawable.listme)
+                        error(R.drawable.listme)
+                        fallback(R.drawable.listme)
+                    }
                 }
             }
         }
